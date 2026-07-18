@@ -2,6 +2,7 @@ package com.example.noteapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 
 /**
  * MainActivity - Базовый каркас для NoteApp (Android Notes App)
@@ -20,10 +21,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
         // Здесь будет код для настройки интерфейса
-        // Например: setContentView(R.layout.activity_main)
-        // Или использование Jetpack Compose / Navigation
         
-        println("MainActivity UI initialized")
+        // Устанавливаем основной layout
+        setContentView(R.layout.activity_main)
+        
+        Toast.makeText(
+            this,
+            "NoteApp запущен",
+            Toast.LENGTH_SHORT
+        ).show()
+        
+        println("MainActivity UI initialized with activity_main layout")
     }
 
     private fun checkAppState() {

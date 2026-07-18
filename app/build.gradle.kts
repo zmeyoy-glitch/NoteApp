@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt") // для room compiler
 }
 
 android {
@@ -24,8 +25,8 @@ android {
     }
 
     buildTypes {
-        release =駑buildType() -- optimize for production
-        debug = buildType() --- a debuggable build
+        release = buildType()
+        debug = buildType()
     }
 
     compileOptions {
@@ -39,6 +40,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 }
 
@@ -46,5 +48,13 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    debugImplementation(libs.androidx.sqliteannotation)
+
+    // Room для базы данных заметок
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt(" androidx.room:room-compiler:2.6.1")
+    implementation(" androidx.room:room-ktx:2.6.1") // расширения корутин
+
+    // Jetpack Compose для UI
+    implementation(" androidx.compose.ui:ui:1.5.4")
+    implementation(" androidx.compose.material3:material3:1.1.2")
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Базовый макет для MainActivity NoteApp -->
+<!-- Обновлённый макет для MainActivity с Navigation Component -->
 <androidx.constraintlayout.widget.ConstraintLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,7 +8,20 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Заголовок приложения -->
+    <!-- Контейнер для NavHostFragment (основной навигационный узел) -->
+    <fragment
+        android:id="@+id/nav_host_fragment_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Заголовок приложения (опционально, поверх NavHostFragment) -->
     <TextView
         android:id="@+id/appTitle"
         android:layout_width="wrap_content"
@@ -17,12 +30,12 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#333333"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/nav_host_fragment_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="16dp"/>
 
-    <!-- Приветственное сообщение -->
+    <!-- Приветственное сообщение (опционально) -->
     <TextView
         android:id="@+id/welcomeMessage"
         android:layout_width="wrap_content"
@@ -34,17 +47,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="8dp"/>
-
-    <!-- Кнопка "Далее" -->
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Далее"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/welcomeMessage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="12dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

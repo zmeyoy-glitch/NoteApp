@@ -3,38 +3,36 @@ package com.example.noteapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.noteapp.data.NoteEntity
+import com.example.noteapp.databinding.ItemNoteBinding
 
-class NoteAdapter(
-    private val onDelete: (NoteEntity) -> Unit
-) : ListAdapter<NoteEntity, NoteAdapter.ViewHolder>(DiffCallback()) {
+class NoteAdapter : ListAdapter<NoteEntity, NoteAdapter.NoteViewHolder>(DiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_note, parent, false)
-        return ViewHolder(view)
+    private val onNoteClick: (NoteEntity) -> Unit = {}
+    private val onDeleteClick: (NoteEntity) -> Unit = {}
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
+        val binding = ItemNoteBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return NoteViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val titleText: TextView = itemView.findViewById(R.id.titleText)
-        private val contentText: TextView = itemView.findViewById(R.id.contentText)
+    inner class NoteViewHolder(private val binding: ItemNoteBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(note: NoteEntity) {
-            titleText.text = note.title
-            contentText.text = note.content
-            itemView.setOnClickListener { /* TODO: Add click handler */ }
-            itemView.setOnLongClickListener {
-                onDelete(note)
-                true
-            }
+            binding.titleText.text = note.title
+            binding.contentText.text = note.content
+            binding.root.setOnClickListener { onNoteClick(note) }
+            binding.deleteButton.setOnClickListener { onDeleteClick(note) }
         }
     }
 
@@ -46,5 +44,13 @@ class NoteAdapter(
         override fun areContentsTheSame(oldItem: NoteEntity, newItem: NoteEntity): Boolean {
             return oldItem == newItem
         }
+    }
+
+    fun setOnNoteClick(listener: (NoteEntity) -> Unit) {
+        this.onNoteClick = listener
+    }
+
+    fun setOnDeleteClick(listener: (NoteEntity) -> Unit) {
+        this.onDeleteClick = listener
     }
 }

@@ -2,51 +2,23 @@ package com.example.noteapp.data
 
 import kotlinx.coroutines.flow.Flow
 
-class NoteRepository(private val dao: NoteDao) {
+class NoteRepository(
+    private val dao: NoteDao
+) {
 
-    fun getAllNotes(): Flow<List<NoteUiModel>> = dao.getAllNotes()
-        .map { entities ->
-            entities.map { entity ->
-                NoteUiModel(
-                    id = entity.id,
-                    title = entity.title,
-                    content = entity.content
-                )
-            }
-        }
+    fun getAllNotes(): Flow<List<NoteEntity>> = dao.getAllNotes()
 
-    suspend fun insert(note: NoteUiModel) {
-        dao.insert(NoteEntity(
-            id = note.id,
-            title = note.title,
-            content = note.content
-        ))
+    suspend fun insert(note: NoteEntity) {
+        dao.insert(note)
     }
 
-    suspend fun update(note: NoteUiModel) {
-        dao.update(NoteEntity(
-            id = note.id,
-            title = note.title,
-            content = note.content
-        ))
+    suspend fun update(note: NoteEntity) {
+        dao.update(note)
     }
 
-    suspend fun delete(note: NoteUiModel) {
-        dao.delete(NoteEntity(
-            id = note.id,
-            title = note.title,
-            content = note.content
-        ))
+    suspend fun delete(note: NoteEntity) {
+        dao.delete(note)
     }
 
-    suspend fun getNoteById(id: Long): NoteUiModel? {
-        val entity = dao.getNoteById(id)
-        return entity?.let {
-            NoteUiModel(
-                id = it.id,
-                title = it.title,
-                content = it.content
-            )
-        }
-    }
+    suspend fun getNoteById(id: Long): NoteEntity? = dao.getNoteById(id)
 }

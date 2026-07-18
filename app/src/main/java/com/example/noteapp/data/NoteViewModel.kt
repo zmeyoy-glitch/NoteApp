@@ -7,35 +7,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-data class NoteUiModel(
-    val id: Long,
-    val title: String,
-    val content: String,
-    val createdAt: Long,
-    val updatedAt: Long
-)
-
 class NoteViewModel : ViewModel() {
 
     private val _notes = MutableStateFlow<List<NoteUiModel>>(emptyList())
     val notes: StateFlow<List<NoteUiModel>> = _notes.asStateFlow()
 
-    private val repository: NoteRepository by lazy {
-        NoteRepository(NoteDatabase.getDatabase(viewModel.applicationContext).noteDao())
+    private lateinit var repository: NoteRepository
+
+    fun init(repository: NoteRepository) {
+        this.repository = repository
     }
 
     fun loadNotes() {
         viewModelScope.launch {
             repository.allNotes.collect { notes ->
-                _notes.value = notes.map { noteEntity ->
-                    NoteUiModel(
-                        id = noteEntity.id,
-                        title = noteEntity.title,
-                        content = noteEntity.content,
-                        createdAt = noteEntity.createdAt,
-                        updatedAt = noteEntity.updatedAt
-                    )
-                }
+                _notes.value = notes.map { NoteUiModel.fromEntity(it) }
             }
         }
     }
@@ -43,6 +29,7 @@ class NoteViewModel : ViewModel() {
     fun insertNote(note: NoteUiModel) {
         viewModelScope.launch {
             val entity = NoteEntity(
+                id = 0, // Will be auto-generated
                 title = note.title,
                 content = note.content,
                 createdAt = System.currentTimeMillis(),
@@ -67,7 +54,21 @@ class NoteViewModel : ViewModel() {
 
     fun deleteNote(note: NoteUiModel) {
         viewModelScope.launch {
-            repository.delete(NoteEntity(id = note.id, title = "", content = "", createdAt = 0L, updatedAt = 0L))
+            val entity = NoteEntity(
+                id = note.id,
+                title = "",
+                content = "",
+                createdAt = 0L,
+                updatedAt = 0L
+            )
+            repository.delete(entity)
+        }
+    }
+
+    fun deleteAllNotes() {
+        viewModelScope.launch {
+            repository.deleteAll()
+            _notes.value = emptyList()
         }
     }
 }

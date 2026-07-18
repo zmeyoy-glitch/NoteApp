@@ -1,8 +1,14 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.2.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
-}
+val localProperties = Properties()
+localProperties.load(java.io.FileInputStream("local.properties").bufferedReader())
+
+// Read version from properties file or use default values
+val appVersionName: String? = localProperties.getProperty("app.version.name") ?: "1.0"
+val appVersionCode: Int = localProperties.getProperty("app.version.code", "1").toInt()

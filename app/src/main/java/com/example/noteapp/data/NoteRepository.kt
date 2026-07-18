@@ -6,7 +6,7 @@ class NoteRepository(
     private val dao: NoteDao
 ) {
 
-    fun getAllNotes(): Flow<List<NoteEntity>> = dao.getAllNotes()
+    val notes: Flow<List<NoteEntity>> = dao.getAllNotes()
 
     suspend fun insert(note: NoteEntity) {
         dao.insert(note)

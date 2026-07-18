@@ -20,55 +20,26 @@ class NoteViewModel : ViewModel() {
 
     fun loadNotes() {
         viewModelScope.launch {
-            repository.allNotes.collect { notes ->
-                _notes.value = notes.map { NoteUiModel.fromEntity(it) }
+            repository.getAllNotes().collect { notes ->
+                _notes.value = notes
             }
         }
     }
 
-    fun insertNote(note: NoteUiModel) {
-        viewModelScope.launch {
-            val entity = NoteEntity(
-                id = 0, // Will be auto-generated
-                title = note.title,
-                content = note.content,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis()
-            )
-            repository.insert(entity)
-        }
+    suspend fun insertNote(note: NoteUiModel) {
+        repository.insert(note)
+        loadNotes()
     }
 
-    fun updateNote(note: NoteUiModel) {
-        viewModelScope.launch {
-            val entity = NoteEntity(
-                id = note.id,
-                title = note.title,
-                content = note.content,
-                createdAt = note.createdAt,
-                updatedAt = System.currentTimeMillis()
-            )
-            repository.update(entity)
-        }
+    suspend fun updateNote(note: NoteUiModel) {
+        repository.update(note)
+        loadNotes()
     }
 
-    fun deleteNote(note: NoteUiModel) {
-        viewModelScope.launch {
-            val entity = NoteEntity(
-                id = note.id,
-                title = "",
-                content = "",
-                createdAt = 0L,
-                updatedAt = 0L
-            )
-            repository.delete(entity)
-        }
+    suspend fun deleteNote(note: NoteUiModel) {
+        repository.delete(note.id)
+        loadNotes()
     }
 
-    fun deleteAllNotes() {
-        viewModelScope.launch {
-            repository.deleteAll()
-            _notes.value = emptyList()
-        }
-    }
+    fun getNotes(): Flow<List<NoteUiModel>> = _notes.asFlow()
 }

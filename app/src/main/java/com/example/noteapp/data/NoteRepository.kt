@@ -2,7 +2,9 @@ package com.example.noteapp.data
 
 import kotlinx.coroutines.flow.Flow
 
-class NoteRepository(private val dao: NoteDao) {
+class NoteRepository(
+    private val dao: NoteDao
+) {
 
     val allNotes: Flow<List<NoteEntity>> = dao.getAllNotes()
 

@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.noteapp.R
 import com.example.noteapp.data.NoteUiModel
 import com.example.noteapp.databinding.ItemNoteBinding
 
 class NoteAdapter(
-    private val onNoteClick: (Long) -> Unit,
-    private val onDeleteClick: (Long) -> Unit
+    private val onItemClick: (Long) -> Unit,
+    private val onItemDelete: (Long) -> Unit
 ) : ListAdapter<NoteUiModel, NoteViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -29,20 +30,18 @@ class NoteAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(note: NoteUiModel) {
-            binding.titleText.text = note.title.ifEmpty { "Untitled" }
-            binding.contentText.text = note.content.take(100).replace("\n", " ")
-            
+            binding.titleText.text = note.title
+            binding.contentText.text = note.content
             binding.root.setOnClickListener {
-                onNoteClick(note.id)
+                onItemClick(note.id)
             }
-
             binding.deleteButton.setOnClickListener {
-                onDeleteClick(note.id)
+                onItemDelete(note.id)
             }
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<NoteUiModel>() {
+    private class DiffCallback : DiffUtil.ItemCallback<NoteUiModel>() {
         override fun areItemsTheSame(oldItem: NoteUiModel, newItem: NoteUiModel): Boolean {
             return oldItem.id == newItem.id
         }

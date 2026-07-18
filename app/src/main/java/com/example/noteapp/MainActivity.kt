@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.noteapp.adapter.NoteAdapter
 import com.example.noteapp.data.NoteViewModel
 import com.example.noteapp.databinding.ActivityMainBinding
 
@@ -20,32 +19,33 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerView()
-        setupViewModel()
+        initViewModel()
         loadNotes()
     }
 
     private fun setupRecyclerView() {
         adapter = NoteAdapter(
             onNoteClick = { note ->
-                // TODO: Navigate to detail screen or edit screen
+                // Navigate to detail or edit screen
             },
             onDeleteClick = { id ->
                 viewModel.deleteNote(NoteUiModel(id, "", "", 0L, 0L))
             }
         )
-
-        binding.recyclerViewNotes.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = this@MainActivity.adapter
-        }
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
     }
 
-    private fun setupViewModel() {
+    private fun initViewModel() {
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+        // Initialize repository with database from application context
+        val app = application as NoteApplication
+        val dao = app.database.noteDao()
+        val repository = NoteRepository(dao)
+        viewModel.init(repository)
     }
 
     private fun loadNotes() {
         viewModel.loadNotes()
-        // TODO: Observe notes state and update UI
     }
 }

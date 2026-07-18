@@ -1,8 +1,4 @@
 package com.example.noteapp
-
-class MainActivity {
-    // Main activity entry point
-    fun onCreate() {
-        println("Hello from MainActivity!")
-    }
-}
+data class Note(val id: Int, val title: String, val content: String) import android.os.Bundle import androidx.appcompat.app.AppCompatActivity
+ 
+class MainActivity : AppCompatActivity() { override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState) setContentView(R.layout.activity_main) } }}

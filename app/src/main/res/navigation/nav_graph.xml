@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Базовый граф навигации для NoteApp -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <!-- Главный экран (MainActivity) -->
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.noteapp.MainFragment"
+        android:label="Главная"
+        tools:layout="@layout/fragment_main">
+        
+        <!-- Аргументы навигации (будут добавлены по мере необходимости) -->
+        <argument
+            android:name="noteId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+</navigation>

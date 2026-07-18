@@ -25,20 +25,25 @@ class NoteActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = NoteAdapter(
-            onNoteClick = { note ->
-                // Navigate to detail or edit screen
+            onNoteClick = { id ->
+                // Navigate to note detail or edit screen
+                val intent = Intent(this, NoteDetailActivity::class.java).apply {
+                    putExtra("noteId", id)
+                }
+                startActivity(intent)
             },
             onDeleteClick = { id ->
-                viewModel.deleteNote(NoteUiModel(id, "", "", 0L, 0L))
+                viewModel.deleteNote(NoteUiModel(id = id, title = "", content = ""))
             }
         )
+
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
     }
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
-        viewModel.init(NoteRepository(viewModel)) // Assuming repository is initialized with viewmodel
+        viewModel.init(NoteRepository(viewModel))
     }
 
     private fun loadNotes() {

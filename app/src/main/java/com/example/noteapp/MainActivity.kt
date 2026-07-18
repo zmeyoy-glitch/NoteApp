@@ -5,16 +5,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.noteapp.data.NoteAdapter
+import com.example.noteapp.data.NoteDatabase
 import com.example.noteapp.data.NoteEntity
 import com.example.noteapp.data.NoteRepository
 import com.example.noteapp.data.NoteViewModel
-import com.example.noteapp.data.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: NoteViewModel
     private lateinit var recyclerView: RecyclerView
+    private lateinit var viewModel: NoteViewModel
     private lateinit var adapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,19 +23,15 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val repository = NoteRepository(NoteDatabase.getInstance(this).noteDao())
+        val database = NoteDatabase.getInstance(applicationContext)
+        val repository = NoteRepository(database.noteDao())
         viewModel = ViewModelProvider(this, ViewModelFactory(repository))[NoteViewModel::class.java]
 
-        adapter = NoteAdapter(emptyList()) { note ->
-            viewModel.delete(note)
-        }
-
+        adapter = NoteAdapter()
         recyclerView.adapter = adapter
-    }
 
-    override fun onResume() {
-        super.onResume()
-        val notes = viewModel.notes.value
-        adapter.submitList(notes)
+        viewModel.notes.observe(this) { notes ->
+            adapter.submitList(notes)
+        }
     }
 }

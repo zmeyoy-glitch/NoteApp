@@ -10,7 +10,7 @@ import com.example.noteapp.data.NoteUiModel
 import com.example.noteapp.databinding.ItemNoteBinding
 
 class NoteAdapter(
-    private val onNoteClick: (NoteUiModel) -> Unit,
+    private val onNoteClick: (Long) -> Unit,
     private val onDeleteClick: (Long) -> Unit
 ) : ListAdapter<NoteUiModel, NoteViewHolder>(DiffCallback()) {
 
@@ -30,10 +30,10 @@ class NoteAdapter(
 
         fun bind(note: NoteUiModel) {
             binding.titleText.text = note.title.ifEmpty { "Untitled" }
-            binding.contentText.text = note.content.take(100).ifEmpty { "No content" }
+            binding.contentText.text = note.content.take(100).replace("\n", " ")
             
             binding.root.setOnClickListener {
-                onNoteClick(note)
+                onNoteClick(note.id)
             }
 
             binding.deleteButton.setOnClickListener {
@@ -42,7 +42,7 @@ class NoteAdapter(
         }
     }
 
-    private class DiffCallback : DiffUtil.ItemCallback<NoteUiModel>() {
+    class DiffCallback : DiffUtil.ItemCallback<NoteUiModel>() {
         override fun areItemsTheSame(oldItem: NoteUiModel, newItem: NoteUiModel): Boolean {
             return oldItem.id == newItem.id
         }

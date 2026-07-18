@@ -2,51 +2,50 @@ package com.example.noteapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
-import kotlinx.coroutines.launch
-import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.noteapp.adapter.NoteAdapter
+import com.example.noteapp.data.NoteViewModel
+import com.example.noteapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var database: NoteDatabase
-    private lateinit var noteDao: NoteDao
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: NoteViewModel
+    private lateinit var adapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Initialize Room Database with singleton pattern
-        database = Room.databaseBuilder(
-            application,
-            NoteDatabase::class.java,
-            "note_database"
-        ).build()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        noteDao = database.noteDao()
-
-        setContentView(R.layout.activity_main)
-
-        Toast.makeText(this, "NoteApp initialized with Room DB", Toast.LENGTH_SHORT).show()
-        
-        // Example: Load notes when activity starts
+        setupRecyclerView()
+        setupViewModel()
         loadNotes()
     }
 
-    private fun loadNotes() {
-        lifecycleScope.launch {
-            noteDao.getAllNotes().collect { notes ->
-                if (notes.isEmpty()) {
-                    Toast.makeText(this@MainActivity, "No notes found", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this@MainActivity, "${notes.size} notes loaded", Toast.LENGTH_SHORT).show()
-                }
+    private fun setupRecyclerView() {
+        adapter = NoteAdapter(
+            onNoteClick = { note ->
+                // TODO: Navigate to detail screen or edit screen
+            },
+            onDeleteClick = { id ->
+                viewModel.deleteNote(NoteUiModel(id, "", "", 0L, 0L))
             }
+        )
+
+        binding.recyclerViewNotes.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // Optional: Close database when activity is destroyed
-        // database.close()
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+    }
+
+    private fun loadNotes() {
+        viewModel.loadNotes()
+        // TODO: Observe notes state and update UI
     }
 }

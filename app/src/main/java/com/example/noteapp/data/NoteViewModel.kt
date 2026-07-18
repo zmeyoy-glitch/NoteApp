@@ -1,45 +1,32 @@
 package com.example.noteapp.data
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
-class NoteViewModel : ViewModel() {
+class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
-    private val _notes = MutableStateFlow<List<NoteUiModel>>(emptyList())
-    val notes: StateFlow<List<NoteUiModel>> = _notes.asStateFlow()
+    private var _notes: Flow<List<NoteUiModel>> = repository.getAllNotes()
+        .catch { emit(emptyList()) }
 
-    private lateinit var repository: NoteRepository
-
-    fun init(repository: NoteRepository) {
-        this.repository = repository
-    }
+    val notes: Flow<List<NoteUiModel>> = _notes
 
     fun loadNotes() {
-        viewModelScope.launch {
-            repository.getAllNotes().collect { notes ->
-                _notes.value = notes
-            }
-        }
+        // Trigger reload if needed (e.g., after delete)
     }
 
-    suspend fun insertNote(note: NoteUiModel) {
+    suspend fun insert(note: NoteUiModel) {
         repository.insert(note)
-        loadNotes()
     }
 
-    suspend fun updateNote(note: NoteUiModel) {
+    suspend fun update(note: NoteUiModel) {
         repository.update(note)
-        loadNotes()
     }
 
-    suspend fun deleteNote(note: NoteUiModel) {
-        repository.delete(note.id)
-        loadNotes()
+    suspend fun delete(note: NoteUiModel) {
+        repository.delete(note)
     }
 
-    fun getNotes(): Flow<List<NoteUiModel>> = _notes.asFlow()
+    suspend fun getNoteById(id: Long): NoteUiModel? {
+        return repository.getNoteById(id)
+    }
 }

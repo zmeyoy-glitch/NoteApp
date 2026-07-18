@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
 }
 
+// Read version from properties file
 val localProperties = Properties()
 localProperties.load(java.io.File("local.properties").reader())
 
-// Read version from properties file
 val appVersion: String? = localProperties.getProperty("app.version") ?: "1.0"
